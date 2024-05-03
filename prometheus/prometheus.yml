@@ -1,48 +1,42 @@
 global:
-  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  scrape_interval: 15s # By default, scrape targets every 15 seconds.
   evaluation_interval: 15s # By default, scrape targets every 15 seconds.
 scrape_configs:
-  - job_name: 'node_exporter'
-    metrics_path: '/metrics'
+  - job_name: "node_exporter"
+    metrics_path: "/metrics"
     static_configs:
-      - targets:
-        - node-exporter:9100
+      - targets: ["172.16.57.1:9100"]
+        labels:
+          hostname: "Front-end-Server-01"
+      - targets: ["172.16.57.6:9100"]
+        labels:
+          hostname: "Front-end-Server-02"
+      - targets: ["172.16.58.2:9100"]
+        labels:
+          hostname: "Back-end-Server-01"
+      - targets: ["172.16.58.3:9100"]
+        labels:
+          hostname: "Back-end-Server-02"
+      - targets: ["172.16.58.5:9100"]
+        labels:
+          hostname: "Database-Server-01"
+      - targets: ["172.16.58.6:9100"]
+        labels:
+          hostname: "Database-Server-02"
     scheme: http
 
-  - job_name: 'grafana'
-    metrics_path: '/metrics'
+  - job_name: "grafana"
+    metrics_path: "/metrics"
     static_configs:
       - targets:
-        - grafana:3000
+          - grafana:3000
     scheme: http
 
-  - job_name: blackbox # To get metrics about the exporter itself
-    metrics_path: /metrics
+  - job_name: "mysql"
     static_configs:
-      - targets:
-        - blackbox:9115
-  - job_name: blackbox-http # To get metrics about the exporter’s targets
-    metrics_path: /probe
-    params:
-      module: [http_2xx]
-    static_configs:
-      - targets:
-        - http://mpnfreshcoconut.com
-        - https://lipeferry.net
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: blackbox:9115
-
-alerting:
-  alertmanagers:
-  - static_configs:
-    - targets:
-      - alertmanager:9093
-
-
-rule_files:
-  - alert_rule.yml
+      - targets: ["172.16.58.15:9104"]
+        labels:
+          hostname: "Online-payment_Database01_TST-hRDF"
+      - targets: ["172.16.58.16:9104"]
+        labels:
+          hostname: "Online-payment_Database02_SRB-JTTJ"
